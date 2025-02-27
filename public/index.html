@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: white;
+    }
+
+    .container {
+      text-align: center;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #f7f7f7;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #d4d4d4;
+    }
+
+    .response {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      text-align: left;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #e6e6e6;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <form id="uploadForm">
+      <input type="file" id="fileInput" name="file" accept="image/*" required />
+      <button type="submit"></button>
+    </form>
+    <div class="response" id="responseContainer"></div>
+  </div>
+
+  <script>
+    document.addEventListener("paste", async (event) => {
+      const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+      for (let item of items) {
+        if (item.type.indexOf("image") !== -1) {
+          const file = item.getAsFile();
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          document.getElementById("fileInput").files = dataTransfer.files;
+
+          // Automatically trigger upload
+          document.getElementById("uploadForm").dispatchEvent(new Event("submit"));
+          break;
+        }
+      }
+    });
+
+    document.getElementById("uploadForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData();
+      const fileInput = document.getElementById("fileInput");
+
+      if (fileInput.files.length > 0) {
+        formData.append("file", fileInput.files[0]);
+
+        try {
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            document.getElementById("responseContainer").innerText = result.response;
+          } else {
+            document.getElementById("responseContainer").innerText = "Error: " + result.error;
+          }
+        } catch (error) {
+          document.getElementById("responseContainer").innerText = "An error occurred: " + error.message;
+        }
+      } else {
+        document.getElementById("responseContainer").innerText = "Please select or paste an image to upload.";
+      }
+    });
+  </script>
+</body>
+
+</html>

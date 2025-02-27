@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Text Extractor",
+  "description": "Upload images to extract text and get answers",
+  "version": "1.0",
+  "permissions": ["storage", "activeTab", "scripting", "clipboardRead"],
+  "host_permissions": ["https://salford.site/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["*://*/*"]
+    }
+  ]
+}
