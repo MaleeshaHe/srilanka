@@ -51,6 +51,27 @@
       overflow-y: auto;
       color: #e6e6e6;
     }
+
+    .loader {
+      display: none;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #d9d9d9;
+      border-radius: 50%;
+      width: 10px;
+      height: 10px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
@@ -58,8 +79,9 @@
   <div class="container">
     <form id="uploadForm">
       <input type="file" id="fileInput" name="file" accept="image/*" required />
-      <button type="submit"></button>
+      <button type="submit">. .</button>
     </form>
+    <div class="loader" id="loader"></div>
     <div class="response" id="responseContainer"></div>
   </div>
 
@@ -82,6 +104,8 @@
 
     document.getElementById("uploadForm").addEventListener("submit", async (event) => {
       event.preventDefault();
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("responseContainer").innerText = "";
 
       const formData = new FormData();
       const fileInput = document.getElementById("fileInput");
@@ -96,6 +120,7 @@
           });
 
           const result = await response.json();
+          document.getElementById("loader").style.display = "none";
 
           if (response.ok) {
             document.getElementById("responseContainer").innerText = result.response;
@@ -104,9 +129,11 @@
           }
         } catch (error) {
           document.getElementById("responseContainer").innerText = "An error occurred: " + error.message;
+          document.getElementById("loader").style.display = "none";
         }
       } else {
         document.getElementById("responseContainer").innerText = "Please select or paste an image to upload.";
+        document.getElementById("loader").style.display = "none";
       }
     });
   </script>
